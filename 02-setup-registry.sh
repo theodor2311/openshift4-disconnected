@@ -56,7 +56,7 @@ htpasswd -bBc /opt/registry/auth/htpasswd "${LOCAL_REGISTRY_USERNAME}" "${LOCAL_
 echo "Modifying firewall rules..."
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=internal --permanent >/dev/null
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=public   --permanent >/dev/null
-firewall-cmd --reload
+firewall-cmd --reload >/dev/null
 
 #Create Registry Container
 echo "Creating registry container..."
@@ -72,7 +72,7 @@ podman create -d --name ocp4-registry -p ${LOCAL_REGISTRY_PORT}:5000 \
 -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
 docker.io/library/registry:2 >/dev/null
 
-echo "Creating registry service..."
+echo "Enabling registry service..."
 echo '[Unit]
 Description=ocp4-registry Podman Container
 After=network.target
@@ -87,7 +87,7 @@ ExecStop=/usr/bin/podman stop -t 10 ocp4-registry
 WantedBy=multi-user.target' > /etc/systemd/system/ocp4-registry.service
 
 systemctl start ocp4-registry
-systemctl enable ocp4-registry
+systemctl enable ocp4-registry >/dev/null
 
 sleep 5
 
