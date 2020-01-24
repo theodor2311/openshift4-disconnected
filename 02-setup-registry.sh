@@ -2,64 +2,42 @@
 set -e
 
 #Variable Setup
-LOCAL_REGISTRY_USERNAME="redhat"
-LOCAL_REGISTRY_PASSWORD="redhat"
-LOCAL_REGISTRY_HOSTNAME="$(hostname -f)"
-LOCAL_REGISTRY_PORT="5000"
-ARCH="x86_64"
-GENERATE_CRT="true" #"true" to generate self-sign certificates
+if [ "${NO_ASK}" == "true" ];then
+  LOCAL_REGISTRY_USERNAME="redhat"
+  LOCAL_REGISTRY_PASSWORD="redhat"
+  LOCAL_REGISTRY_HOSTNAME="$(hostname -f)"
+  LOCAL_REGISTRY_PORT="5000"
+  GENERATE_CRT="true" #"true" to generate self-sign certificates
+fi
 
-# if [ -z "${LOCAL_REGISTRY_USERNAME}" ];then
-#   read -p "Enter registry username [redhat]: " input
-#   LOCAL_REGISTRY_USERNAME=${input:-redhat}
-# fi
-#
-# if [ -z "${LOCAL_REGISTRY_PASSWORD}" ];then
-#   read -p "Enter registry password [redhat]: " input
-#   LOCAL_REGISTRY_PASSWORD=${input:-redhat}
-# fi
-#
-# if [ -z "${LOCAL_REGISTRY_HOSTNAME}" ];then
-#   read -p "Enter registry URL [$(hostname -f)]: " input
-#   LOCAL_REGISTRY_HOSTNAME=${input:-$(hostname -f)}
-# fi
-#
-# if [ -z "${GENERATE_CRT}" ];then
-#   read -p "Generate self sign certificate? (Only will generate if true) [true]: " input
-#   GENERATE_CRT=${input:-true}
-# fi
+if [ -z "${LOCAL_REGISTRY_USERNAME}" ];then
+  read -p "Enter registry username [redhat]: " input
+  LOCAL_REGISTRY_USERNAME=${input:-redhat}
+fi
 
-VERSION="latest"
+if [ -z "${LOCAL_REGISTRY_PASSWORD}" ];then
+  read -p "Enter registry password [redhat]: " input
+  LOCAL_REGISTRY_PASSWORD=${input:-redhat}
+fi
 
-BUILDNAME="ocp"
-# BUILDNUMBER=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep 'Name:' | awk '{print $NF}')
+if [ -z "${LOCAL_REGISTRY_HOSTNAME}" ];then
+  read -p "Enter registry URL [$(hostname -f)]: " input
+  LOCAL_REGISTRY_HOSTNAME=${input:-$(hostname -f)}
+fi
 
-# if [ "$(echo ${BUILDNUMBER} | cut -d '.' -f1-2)" == "4.2" ] && [ "$(echo ${BUILDNUMBER} | cut -d '.' -f3)" -lt "14" ];then
-#   OCP_RELEASE="${BUILDNUMBER}"
-# else 
-#   OCP_RELEASE="${BUILDNUMBER}-${ARCH}"
-# fi
+if [ -z "${LOCAL_REGISTRY_PORT}" ];then
+  read -p "Enter registry port [5000]: " input
+  LOCAL_REGISTRY_HOSTNAME=${input:-5000}
+fi
 
-
-LOCAL_REGISTRY="${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}"
-LOCAL_REPOSITORY='ocp4/openshift4'
-PRODUCT_REPO="$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep "Pull From:" | cut -d '/' -f2)"
-LOCAL_SECRET_JSON="$HOME/pull-secret.json"
-RELEASE_NAME="$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep "Pull From:" | cut -d '/' -f3 | cut -d '@' -f1)"
-REGISTRY_AUTH=$(echo -n "${LOCAL_REGISTRY_USERNAME}:${LOCAL_REGISTRY_PASSWORD}" | base64 -w0)
-REGISTRY_EMAIL="registry@${LOCAL_REGISTRY_HOSTNAME}"
-
-# if [ -z "${PULL_SECRET}" ];then
-#   read -p "Enter Pull Secret [Required]: " PULL_SECRET
-# fi
-
-# jq '."auths"' <<<"${PULL_SECRET}" >/dev/null
+if [ -z "${GENERATE_CRT}" ];then
+  read -p "Generate self sign certificate? (Only will generate if true) [true]: " input
+  GENERATE_CRT=${input:-true}
+fi
 
 echo "Preparing required packages..."
-#grep -q LOCAL_REGISTRY_HOSTNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_HOSTNAME=$LOCAL_REGISTRY_HOSTNAME" >> ~/.bashrc
 yum -y install podman httpd httpd-tools wget jq -q
 mkdir -p /opt/registry/{auth,certs,data}
-
 
 #Self-sign certificate
 if [ "${GENERATE_CRT}" == "true" ];then
@@ -75,8 +53,8 @@ echo "Creating htpasswd..."
 htpasswd -bBc /opt/registry/auth/htpasswd "${LOCAL_REGISTRY_USERNAME}" "${LOCAL_REGISTRY_PASSWORD}" >/dev/null
 
 #Setup Firewall Rules
-firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=internal --permanent
-firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=public   --permanent
+firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=internal --permanent >/dev/null
+firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=public   --permanent >/dev/null
 firewall-cmd --reload
 
 #Create Registry Container
@@ -113,18 +91,8 @@ systemctl enable ocp4-registry
 sleep 5
 
 #Test
-if [[ $(curl -s -o /dev/null -w %{http_code} -u "${LOCAL_REGISTRY_USERNAME}":"${LOCAL_REGISTRY_PASSWORD}" -k https://${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}/v2/_catalog) != '200' ]];then
+if [[ $(curl -s -o /dev/null -w "%{http_code}" -u "${LOCAL_REGISTRY_USERNAME}":"${LOCAL_REGISTRY_PASSWORD}" -k "https://${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}/v2/_catalog") != '200' ]];then
   echo "Cannot connect to registry" && exit 1
 fi
 
-
-# Mirroring Images
-# echo "Mirroring Images..."
-# echo ${PULL_SECRET} | jq '.auths += {"'"${LOCAL_REGISTRY_HOSTNAME}"':'${LOCAL_REGISTRY_PORT}'": {"auth": "'"${REGISTRY_AUTH}"'","email": "'"${REGISTRY_EMAIL}"'"}}' > ~/pull-secret.json
-
-# oc adm release mirror -a ${LOCAL_SECRET_JSON} \
-# --from=quay.io/${PRODUCT_REPO}/${RELEASE_NAME}:${OCP_RELEASE} \
-# --to-release-image=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE} \
-# --to=${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}
-
-#oc adm -a ${LOCAL_SECRET_JSON} release extract --command=openshift-install "${LOCAL_REGISTRY}/${LOCAL_REPOSITORY}:${OCP_RELEASE}"
+echo "Registry installed successfully"
