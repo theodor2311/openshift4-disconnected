@@ -20,6 +20,6 @@ wget -q --show-progress https://mirror.openshift.com/pub/openshift-v4/clients/${
 tar -xzf /var/www/html/openshift-client-linux-${BUILDNUMBER}.tar.gz -C /usr/bin/
 tar -xzf /var/www/html/openshift-install-linux-${BUILDNUMBER}.tar.gz -C /usr/bin/
 
-ls -l /usr/bin/{oc,openshift-install}
+ls -l /usr/bin/{oc,openshift-install} > /dev/null
 
-echo "OpenShift tools installed."
+echo "OpenShift tools installed"
