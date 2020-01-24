@@ -35,11 +35,15 @@ fi
 
 jq '."auths"' <<<"${PULL_SECRET}" >/dev/null
 
-
 if [ -z "${VERSION}" ];then
   read -p "Enter OpenShift Version [latest]: " input
   VERSION=${input:-latest}
-#   VERSION="latest"
+fi
+
+if [ "$(echo ${BUILDNUMBER} | cut -d '.' -f1-2)" == "4.2" ] && [ "$(echo ${BUILDNUMBER} | cut -d '.' -f3)" -lt "13" ];then
+  OCP_RELEASE="${BUILDNUMBER}"
+else 
+  OCP_RELEASE="${BUILDNUMBER}-${ARCH}"
 fi
 
 BUILDNAME="ocp"

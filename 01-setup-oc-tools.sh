@@ -2,7 +2,8 @@
 set -e
 
 if [ -z "${VERSION}" ];then
-  VERSION="latest"
+  read -p "Enter OpenShift Version [latest]: " input
+  VERSION=${input:-latest}
 fi
 if [ -z "${BUILDNAME}" ];then
   BUILDNAME="ocp"

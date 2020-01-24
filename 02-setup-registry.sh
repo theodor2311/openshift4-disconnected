@@ -30,11 +30,17 @@ GENERATE_CRT="true" #"true" to generate self-sign certificates
 # fi
 
 VERSION="latest"
-#VERSION="4.2.13"
 
 BUILDNAME="ocp"
-BUILDNUMBER=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep 'Name:' | awk '{print $NF}')
-OCP_RELEASE="${BUILDNUMBER}-${ARCH}"
+# BUILDNUMBER=$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep 'Name:' | awk '{print $NF}')
+
+# if [ "$(echo ${BUILDNUMBER} | cut -d '.' -f1-2)" == "4.2" ] && [ "$(echo ${BUILDNUMBER} | cut -d '.' -f3)" -lt "14" ];then
+#   OCP_RELEASE="${BUILDNUMBER}"
+# else 
+#   OCP_RELEASE="${BUILDNUMBER}-${ARCH}"
+# fi
+
+
 LOCAL_REGISTRY="${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}"
 LOCAL_REPOSITORY='ocp4/openshift4'
 PRODUCT_REPO="$(curl -s https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt | grep "Pull From:" | cut -d '/' -f2)"
