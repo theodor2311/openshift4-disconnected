@@ -87,7 +87,7 @@ ExecStop=/usr/bin/podman stop -t 10 ocp4-registry
 WantedBy=multi-user.target' > /etc/systemd/system/ocp4-registry.service
 
 systemctl start ocp4-registry
-systemctl enable ocp4-registry >/dev/null
+systemctl enable ocp4-registry >/dev/null 2>&1
 
 sleep 5
 
