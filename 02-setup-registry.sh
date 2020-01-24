@@ -11,27 +11,27 @@ if [ "${NO_ASK}" == "true" ];then
 fi
 
 if [ -z "${LOCAL_REGISTRY_USERNAME}" ];then
-  read -p "Enter registry username [redhat]: " input
+  read -r -p "Enter registry username [redhat]: " input
   LOCAL_REGISTRY_USERNAME=${input:-redhat}
 fi
 
 if [ -z "${LOCAL_REGISTRY_PASSWORD}" ];then
-  read -p "Enter registry password [redhat]: " input
+  read -r -p "Enter registry password [redhat]: " input
   LOCAL_REGISTRY_PASSWORD=${input:-redhat}
 fi
 
 if [ -z "${LOCAL_REGISTRY_HOSTNAME}" ];then
-  read -p "Enter registry URL [$(hostname -f)]: " input
+  read -r -p "Enter registry URL [$(hostname -f)]: " input
   LOCAL_REGISTRY_HOSTNAME=${input:-$(hostname -f)}
 fi
 
 if [ -z "${LOCAL_REGISTRY_PORT}" ];then
-  read -p "Enter registry port [5000]: " input
+  read -r -p "Enter registry port [5000]: " input
   LOCAL_REGISTRY_HOSTNAME=${input:-5000}
 fi
 
 if [ -z "${GENERATE_CRT}" ];then
-  read -p "Generate self sign certificate? (Only will generate if true) [true]: " input
+  read -r -p "Generate self sign certificate? (Only will generate if true) [true]: " input
   GENERATE_CRT=${input:-true}
 fi
 
