@@ -27,7 +27,7 @@ fi
 
 if [ -z "${LOCAL_REGISTRY_PORT}" ];then
   read -r -p "Enter registry port [5000]: " input
-  LOCAL_REGISTRY_HOSTNAME=${input:-5000}
+  LOCAL_REGISTRY_PORT=${input:-5000}
 fi
 
 if [ -z "${GENERATE_CRT}" ];then
@@ -53,6 +53,7 @@ echo "Creating htpasswd..."
 htpasswd -bBc /opt/registry/auth/htpasswd "${LOCAL_REGISTRY_USERNAME}" "${LOCAL_REGISTRY_PASSWORD}" >/dev/null
 
 #Setup Firewall Rules
+echo "Modifying firewall rules..."
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=internal --permanent >/dev/null
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=public   --permanent >/dev/null
 firewall-cmd --reload

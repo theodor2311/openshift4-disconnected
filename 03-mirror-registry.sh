@@ -49,7 +49,7 @@ fi
 
 if [ -z "${LOCAL_REGISTRY_PORT}" ];then
   read -r -p "Enter registry port [5000]: " input
-  LOCAL_REGISTRY_HOSTNAME=${input:-5000}
+  LOCAL_REGISTRY_PORT=${input:-5000}
 fi
 
 LOCAL_REGISTRY="${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}"
