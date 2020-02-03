@@ -7,8 +7,8 @@ Tested with 4.2.13, 4.2.14, 4.3.0
 - Prepare Pull Secret (https://cloud.redhat.com/openshift/install/pull-secret)
 ## Steps
 - Download OC Tools
-- Setup Registry
-- Mirror Registry
+- Setup Private Registry
+- Mirror OpenShift Images to Private Registry
 - Download CoreOS Images (Only Required for Bare Metal)
 - Setup HTTP Repository (For Images and Ign files)
 
@@ -25,7 +25,7 @@ $ ./01-setup-oc-tools.sh
 # Default Values:
 # Enter OpenShift Version [latest]:
 ```
-## Setup Registry
+## Setup Private Registry
 ```bash
 $ ./02-setup-registry.sh
 
@@ -35,7 +35,7 @@ $ ./02-setup-registry.sh
 # Enter registry URL [theo-bastion.ocp4.disconnect.local]:
 # Enter registry port [5000]:
 ```
-## Mirror Registry
+## Mirror OpenShift Images to Private Registry
 ```bash
 $ ./03-mirror-registry.sh
 
