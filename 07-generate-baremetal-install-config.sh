@@ -75,3 +75,5 @@ imageContentSources:
   - ${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}/${LOCAL_REPOSITORY}
   source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
 EOF
+
+echo "Generated to $HOME/ocp4-${CLUSTER_NAME}.${BASE_DOMAIN}/install-config.yaml"
