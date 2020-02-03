@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-#Variable Setup
+# Variable Setup
+source $HOME/.bashrc
+
 if [ "${NO_ASK}" == "true" ];then
   LOCAL_REGISTRY_USERNAME="redhat"
   LOCAL_REGISTRY_PASSWORD="redhat"
@@ -35,11 +37,17 @@ if [ -z "${GENERATE_CRT}" ];then
   GENERATE_CRT=${input:-true}
 fi
 
+# Persist Answers
+grep -q LOCAL_REGISTRY_USERNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_USERNAME=$LOCAL_REGISTRY_USERNAME" >> $HOME/.basrc
+grep -q LOCAL_REGISTRY_PASSWORD $HOME/.bashrc || echo "export LOCAL_REGISTRY_PASSWORD=$LOCAL_REGISTRY_PASSWORD" >> $HOME/.basrc
+grep -q LOCAL_REGISTRY_HOSTNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_HOSTNAME=$LOCAL_REGISTRY_HOSTNAME" >> $HOME/.basrc
+grep -q LOCAL_REGISTRY_PORT $HOME/.bashrc || echo "export LOCAL_REGISTRY_PORT=$LOCAL_REGISTRY_PORT" >> $HOME/.basrc
+
 echo "Preparing required packages..."
 yum -y install podman httpd-tools wget jq -q
 mkdir -p /opt/registry/{auth,certs,data}
 
-#Self-sign certificate
+# Self-sign certificate
 if [ "${GENERATE_CRT}" == "true" ];then
   echo "Generating self-sign certificates..."
   cd /opt/registry/certs
@@ -48,17 +56,17 @@ if [ "${GENERATE_CRT}" == "true" ];then
   update-ca-trust
 fi
 
-#Create Htpasswd
+# Create Htpasswd
 echo "Creating htpasswd..."
 htpasswd -bBc /opt/registry/auth/htpasswd "${LOCAL_REGISTRY_USERNAME}" "${LOCAL_REGISTRY_PASSWORD}" >/dev/null
 
-#Setup Firewall Rules
+# Setup Firewall Rules
 echo "Modifying firewall rules..."
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=internal --permanent >/dev/null
 firewall-cmd --add-port=${LOCAL_REGISTRY_PORT}/tcp --zone=public   --permanent >/dev/null
 firewall-cmd --reload >/dev/null
 
-#Create Registry Container
+# Create Registry Container
 echo "Creating registry container..."
 podman create -d --name ocp4-registry -p ${LOCAL_REGISTRY_PORT}:5000 \
 -v /opt/registry/data:/var/lib/registry:z \
@@ -91,7 +99,7 @@ systemctl enable ocp4-registry >/dev/null 2>&1
 
 sleep 5
 
-#Test
+# Test
 if [[ $(curl -s -o /dev/null -w "%{http_code}" -u "${LOCAL_REGISTRY_USERNAME}":"${LOCAL_REGISTRY_PASSWORD}" -k "https://${LOCAL_REGISTRY_HOSTNAME}:${LOCAL_REGISTRY_PORT}/v2/_catalog") != '200' ]];then
   echo "Cannot connect to registry" && exit 1
 fi

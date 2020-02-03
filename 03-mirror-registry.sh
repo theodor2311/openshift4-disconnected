@@ -1,6 +1,8 @@
 #!/bin/bash
+set -e
 
-#Variable Setup
+# Variable Setup
+source $HOME/.bashrc
 
 if [ "${NO_ASK}" == "true" ];then
   LOCAL_REGISTRY_USERNAME="redhat"
@@ -11,9 +13,9 @@ fi
 
 ARCH="x86_64"
 
-if [ -z "${PULL_SECRET}" ];then
+while [ -z "${PULL_SECRET}" ];do
   read -r -p "Enter Pull Secret [Required]: " PULL_SECRET
-fi
+done
 
 jq '."auths"' <<<"${PULL_SECRET}" >/dev/null
 

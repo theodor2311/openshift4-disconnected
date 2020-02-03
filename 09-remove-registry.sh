@@ -1,4 +1,12 @@
 #!/bin/bash
+set -e
+
+# Variable Setup
+source $HOME/.bashrc
+
+if [ "${NO_ASK}" == "true" ];then
+  LOCAL_REGISTRY_PORT="5000"
+fi
 
 if [ -z "${LOCAL_REGISTRY_PORT}" ];then
   read -r -p "Enter registry port [5000]: " input

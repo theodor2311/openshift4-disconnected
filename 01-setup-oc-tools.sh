@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Variable Setup
+source $HOME/.bashrc
+
 if [ -z "${VERSION}" ];then
   read -r -p "Enter OpenShift Version [latest]: " input
   VERSION=${input:-latest}
@@ -12,6 +15,7 @@ if [ -z "${BUILDNUMBER}" ];then
   BUILDNUMBER=$(curl -s "https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/release.txt" | grep 'Name:' | awk '{print $NF}')
 fi
 
+# Download OC Tools
 echo "Downloading OpenShift CLI..."
 wget -q --show-progress "https://mirror.openshift.com/pub/openshift-v4/clients/${BUILDNAME}/${VERSION}/openshift-client-linux-${BUILDNUMBER}.tar.gz" -P /var/www/html/
 echo "Downloading OpenShift Installer..."

@@ -1,5 +1,9 @@
 #!/bin/bash
 set -e
+
+# Variable Setup
+source $HOME/.bashrc
+
 if [ -z "${VERSION}" ];then
   read -r -p "Enter OpenShift Version [latest]: " input
   VERSION=${input:-latest}
