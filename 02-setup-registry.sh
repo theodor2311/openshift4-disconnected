@@ -38,10 +38,10 @@ if [ -z "${GENERATE_CRT}" ];then
 fi
 
 # Persist Answers
-grep -q LOCAL_REGISTRY_USERNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_USERNAME=$LOCAL_REGISTRY_USERNAME" >> $HOME/.basrc
-grep -q LOCAL_REGISTRY_PASSWORD $HOME/.bashrc || echo "export LOCAL_REGISTRY_PASSWORD=$LOCAL_REGISTRY_PASSWORD" >> $HOME/.basrc
-grep -q LOCAL_REGISTRY_HOSTNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_HOSTNAME=$LOCAL_REGISTRY_HOSTNAME" >> $HOME/.basrc
-grep -q LOCAL_REGISTRY_PORT $HOME/.bashrc || echo "export LOCAL_REGISTRY_PORT=$LOCAL_REGISTRY_PORT" >> $HOME/.basrc
+grep -q LOCAL_REGISTRY_USERNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_USERNAME=$LOCAL_REGISTRY_USERNAME" >> $HOME/.bashrc
+grep -q LOCAL_REGISTRY_PASSWORD $HOME/.bashrc || echo "export LOCAL_REGISTRY_PASSWORD=$LOCAL_REGISTRY_PASSWORD" >> $HOME/.bashrc
+grep -q LOCAL_REGISTRY_HOSTNAME $HOME/.bashrc || echo "export LOCAL_REGISTRY_HOSTNAME=$LOCAL_REGISTRY_HOSTNAME" >> $HOME/.bashrc
+grep -q LOCAL_REGISTRY_PORT $HOME/.bashrc || echo "export LOCAL_REGISTRY_PORT=$LOCAL_REGISTRY_PORT" >> $HOME/.bashrc
 
 echo "Preparing required packages..."
 yum -y install podman httpd-tools wget jq -q
