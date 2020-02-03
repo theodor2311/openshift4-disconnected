@@ -1,7 +1,6 @@
 # OpenShift4 Disconnected Installation 
-Tested with 4.2.13, 4.2.14, 4.3.0
-*DNS, DHCP, Load balancer, Dracut CMD, PXE etc... are not provided in this Guide*
-
+Tested with 4.2.13, 4.2.14, 4.3.0  
+**DNS, DHCP, Load balancer, Dracut CMD, PXE etc... are not provided in this Guide**
 ## Prerequisite
 - Setup yum repostiries for install podman httpd httpd-tools wget jq
 - Prepare Pull Secret (https://cloud.redhat.com/openshift/install/pull-secret)
