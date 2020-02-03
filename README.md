@@ -1,26 +1,29 @@
 # OpenShift4 Disconnected Installation 
 Tested with 4.2.13, 4.2.14, 4.3.0
-# Prerequisite
+## Prerequisite
 - Setup yum repostiries for install podman httpd httpd-tools wget jq
 - Prepare Pull Secret (https://cloud.redhat.com/openshift/install/pull-secret)
-# Steps
+## Steps
 - Download OC Tools
 - Setup Registry
 - Mirror Registry
 - Download CoreOS Images (Only Required for Bare Metal)
 - Setup HTTP Repository (For Images and Ign files)
-# Using All Default Values
+
+Disconnected preparation is done. you may now go ahead to install OpenShift4 :)
+
+## Using All Default Values
 ```bash
 export NO_ASK=true # Setting this virable will use all default values *Pull Secret Still Required*
 ```
-# Download OC Tools
+## Download OC Tools
 ```bash
 $ ./01-setup-oc-tools.sh
 
 # Default Values:
 # Enter OpenShift Version [latest]:
 ```
-# Setup Registry
+## Setup Registry
 ```bash
 $ ./02-setup-registry.sh
 
@@ -30,7 +33,7 @@ $ ./02-setup-registry.sh
 # Enter registry URL [theo-bastion.ocp4.disconnect.local]:
 # Enter registry port [5000]:
 ```
-# Mirror Registry
+## Mirror Registry
 ```bash
 $ ./03-mirror-registry.sh
 
@@ -42,20 +45,25 @@ $ ./03-mirror-registry.sh
 # Enter registry URL [$(hostname -f )]:
 # Enter registry port [5000]:
 ```
-# Download CoreOS Images (Only Required for Bare Metal)
+## Download CoreOS Images (Only Required for Bare Metal)
 ```bash
-./04-download-rhcos-images-baremetal.sh
+$ ./04-download-rhcos-images-baremetal.sh
 
 # Default Values:
 # Enter OpenShift Version [latest]:
 ```
-# Setup HTTP Repository (For Images and Ign files)
+## Setup HTTP Repository (For Images and Ign files)
 ```bash
-./06-setup-repo.sh
+$ ./06-setup-repo.sh
 
 # Default Values:
 # Enter HTTP repository port [8080]:
 ```
+## Disconnected OLM
+```bash
+WIP...
+```
+
 ## References
 - https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html
 - https://docs.openshift.com/container-platform/4.3/installing/install_config/installing-restricted-networks-preparations.html
