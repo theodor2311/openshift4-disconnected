@@ -36,7 +36,7 @@ if [ -z "${GENERATE_CRT}" ];then
 fi
 
 echo "Preparing required packages..."
-yum -y install podman httpd httpd-tools wget jq -q
+yum -y install podman httpd-tools wget jq -q
 mkdir -p /opt/registry/{auth,certs,data}
 
 #Self-sign certificate
