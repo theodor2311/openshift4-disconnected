@@ -14,6 +14,11 @@ Tested with 4.2.13, 4.2.14, 4.3.0
 
 Disconnected preparation is done. you may now go ahead to install OpenShift4 :)
 
+You can also try the following scripts for creating install install-config.yaml
+```bash
+$ ./07-generate-baremetal-install-config.sh
+```
+
 ## Using All Default Values
 ```bash
 export NO_ASK=true # Setting this virable will use all default values *Pull Secret Still Required*
@@ -65,7 +70,9 @@ $ ./06-setup-repo.sh
 ```bash
 WIP...
 ```
-
+## Troubleshooting
+Cannot change answers:
+Remove varibles from ~/.bashrc and reset terminal
 ## References
 - https://docs.openshift.com/container-platform/4.3/installing/installing_bare_metal/installing-restricted-networks-bare-metal.html
 - https://docs.openshift.com/container-platform/4.3/installing/install_config/installing-restricted-networks-preparations.html
