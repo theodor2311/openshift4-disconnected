@@ -51,8 +51,54 @@ mkdir -p /opt/registry/{auth,certs,data}
 if [ "${GENERATE_CRT}" == "true" ];then
   echo "Generating self-sign certificates..."
   cd /opt/registry/certs
-  openssl req -newkey rsa:4096 -nodes -sha256 -keyout domain.key -x509 -days 365 -out domain.crt -subj "/CN=${LOCAL_REGISTRY_HOSTNAME}" >/dev/null 2>&1
-  cp /opt/registry/certs/domain.crt /etc/pki/ca-trust/source/anchors/
+  mkdir -p ca/ca.db.certs
+  touch ca/ca.db.index
+  echo "1000" > ca/ca.db.serial
+
+  openssl req -new -newkey rsa:4096 -sha256 -x509 -days 3650 -keyout ca/ca.key -out ca/ca.crt -nodes -subj "/CN=${LOCAL_REGISTRY_HOSTNAME}"
+
+  openssl req \
+  -newkey rsa:4096 \
+  -sha256 \
+  -days 3650 \
+  -nodes \
+  -keyout registry.key \
+  -out registry.csr \
+  -subj "/CN=${LOCAL_REGISTRY_HOSTNAME}"
+
+  openssl ca -batch -in registry.csr -out registry.crt \
+    -extensions san \
+    -config <( \
+      echo '[req]'; \
+      echo 'distinguished_name=req'; \
+      echo '[san]'; \
+      echo "subjectAltName=DNS:${LOCAL_REGISTRY_HOSTNAME}"
+      echo '[ ca ]'
+      echo 'default_ca = ca_default'
+      echo '[ ca_default ]'
+      echo 'dir = ./ca'
+      echo 'certs = $dir'
+      echo 'new_certs_dir = $dir/ca.db.certs'
+      echo 'database = $dir/ca.db.index'
+      echo 'serial = $dir/ca.db.serial'
+      echo 'RANDFILE = $dir/ca.db.rand'
+      echo 'certificate = $dir/ca.crt'
+      echo 'private_key = $dir/ca.key'
+      echo 'default_days = 3650'
+      echo 'default_crl_days = 30'
+      echo 'default_md = sha256'
+      echo 'preserve = no'
+      echo 'policy = generic_policy'
+      echo '[ generic_policy ]'
+      echo 'countryName = optional'
+      echo 'stateOrProvinceName = optional'
+      echo 'localityName = optional'
+      echo 'organizationName = optional'
+      echo 'organizationalUnitName = optional'
+      echo 'commonName = optional'
+      echo 'emailAddress = optional')
+
+  cp /opt/registry/certs/ca.crt /etc/pki/ca-trust/source/anchors/
   update-ca-trust
 fi
 
@@ -76,8 +122,8 @@ podman create -d --name ocp4-registry -p ${LOCAL_REGISTRY_PORT}:5000 \
 -e "REGISTRY_HTTP_SECRET=ALongRandomSecretForRegistry" \
 -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
 -v /opt/registry/certs:/certs:z \
--e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
--e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+-e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+-e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
 docker.io/library/registry:2 >/dev/null
 
 echo "Enabling registry service..."
