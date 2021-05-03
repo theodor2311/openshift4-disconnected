@@ -98,7 +98,7 @@ if [ "${GENERATE_CRT}" == "true" ];then
       echo 'commonName = optional'
       echo 'emailAddress = optional')
 
-  cp /opt/registry/certs/ca.crt /etc/pki/ca-trust/source/anchors/
+  cp /opt/registry/certs/ca/ca.crt /etc/pki/ca-trust/source/anchors/
   update-ca-trust
 fi
 
